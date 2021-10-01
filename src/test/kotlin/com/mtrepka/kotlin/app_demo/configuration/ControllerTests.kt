@@ -29,7 +29,7 @@ class ControllerTests(@Autowired val restTemplate: TestRestTemplate) {
     fun postOrderSummary_correctData() {
         val testBody = """{"orange":4, "apple":22}"""
         val predResponse =
-            """{"fruitList":[{"amount":4,"price":0.25,"name":"Orange","value":1.0},{"amount":22,"price":0.6,"name":"Apple","value":13.2}],"value":14.2}"""
+            """{"fruitList":[{"amount":4,"value":0.75,"price":0.25,"name":"Orange"},{"amount":22,"value":6.6,"price":0.6,"name":"Apple"}],"value":7.35}"""
         val request = HttpEntity<String>(testBody, headers)
         val response = restTemplate.postForEntity<String>(ORDER_SUMMARY_POST_URI, request)
         assert(response.statusCode.is2xxSuccessful)
@@ -50,11 +50,10 @@ class ControllerTests(@Autowired val restTemplate: TestRestTemplate) {
     @Test
     fun postOrderSummary_partiallyCorrectData() {
         val testBody = """{"orange":4, "apple":-1, "onion":4}"""
-        val predResponse = """{"fruitList":[{"amount":4,"price":0.25,"name":"Orange","value":1.0}],"value":1.0}"""
+        val predResponse = """{"fruitList":[{"amount":4,"value":0.75,"price":0.25,"name":"Orange"}],"value":0.75}"""
         val request = HttpEntity<String>(testBody, headers)
         val response = restTemplate.postForEntity<String>(ORDER_SUMMARY_POST_URI, request)
         assert(response.statusCode.is2xxSuccessful)
-        println(response.body)
         assert(response.body == predResponse)
     }
 

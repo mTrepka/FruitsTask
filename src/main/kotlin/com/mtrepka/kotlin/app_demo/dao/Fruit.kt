@@ -7,7 +7,7 @@ abstract class Fruit (val amount: Int){
         return javaClass.simpleName
     }
 
-    fun getValue() : Double {
+    open fun getValue() : Double {
         return getPrice() * amount
     }
 }
