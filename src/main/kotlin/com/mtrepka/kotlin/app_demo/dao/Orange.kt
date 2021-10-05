@@ -8,6 +8,6 @@ class Orange(amount: Int) : Fruit(amount = amount) {
     }
 
     override fun getValue(): Double {
-        return SpecialOffer.calculateSpecialOffer(amount,getPrice(),3,100);
+        return SpecialOffer.calculateSpecialOffer(amount, getPrice(), 3, 100)
     }
 }

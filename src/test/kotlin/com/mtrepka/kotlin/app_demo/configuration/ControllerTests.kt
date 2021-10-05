@@ -56,23 +56,22 @@ class ControllerTests(
 
     @Test
     fun postOrderSummary_wrongData() {
-        val testBody = """{"orange":0, "apple":-1, "onion":4}"""
+        val testBody = """{"onion":4}"""
         val predResponse = arrayOf(
-            """"fruitList":[]""",
-            """"value":0.0""", """"id"""
+            """{"message":"onion is not supported"}"""
         )
         val request = HttpEntity<String>(testBody, headers)
         val response = restTemplate.postForEntity<String>(ORDER_SUMMARY_POST_URI, request)
         assert(response.statusCode.is2xxSuccessful)
+        println(response.body)
         predResponse.forEach { e -> assert(response.body!!.contains(e)) }
     }
 
     @Test
     fun postOrderSummary_partiallyCorrectData() {
-        val testBody = """{"orange":4, "apple":-1, "onion":4}"""
+        val testBody = """{"orange":4, "apple":-1}"""
         val predResponse = arrayOf(
-            """{"amount":4,"value":0.75,"price":0.25,"name":"Orange"}""",
-            """"value":0.75"""
+            """{"message":"Amount cant be less than 1"}"""
         )
         val request = HttpEntity<String>(testBody, headers)
         val response = restTemplate.postForEntity<String>(ORDER_SUMMARY_POST_URI, request)
@@ -84,7 +83,7 @@ class ControllerTests(
     fun getOrderSummary_correctId() {
         val ADDITIONAL_ARGUMENTS = "id=$orderSummaryId"
         val predResponse =
-            """{"id":"$orderSummaryId","fruitList":[{"amount":5,"value":1.0,"price":0.25,"name":"Orange"}],"value":1.0}"""
+            """[{"id":"$orderSummaryId","fruitList":[{"amount":5,"value":1.0,"price":0.25,"name":"Orange"}],"value":1.0}]"""
         val request = HttpEntity<String>(headers)
         val response = restTemplate.getForEntity<String>("$ORDER_SUMMARY_POST_URI?$ADDITIONAL_ARGUMENTS", request)
         assert(response.statusCode.is2xxSuccessful)
@@ -97,14 +96,13 @@ class ControllerTests(
         val ADDITIONAL_ARGUMENTS = "id=0"
         val request = HttpEntity<String>(headers)
         val response = restTemplate.getForEntity<String>("$ORDER_SUMMARY_POST_URI?$ADDITIONAL_ARGUMENTS", request)
-        assert(response.statusCode.is4xxClientError)
+        assert(response.statusCode.is2xxSuccessful)
     }
 
     @Test
     fun getAllOrderSummary() {
-        val ADDITIONAL_URI = "all/"
         val request = HttpEntity<String>(headers)
-        val response = restTemplate.getForEntity<String>("$ORDER_SUMMARY_POST_URI$ADDITIONAL_URI", request)
+        val response = restTemplate.getForEntity<String>(ORDER_SUMMARY_POST_URI, request)
         assert(response.statusCode.is2xxSuccessful)
     }
 
